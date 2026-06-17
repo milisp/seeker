@@ -1,0 +1,82 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "suspicious": {
+        "noExplicitAny": "warn",
+        "noControlCharactersInRegex": "off",
+        "noArrayIndexKey": "error",
+        "noAsyncPromiseExecutor": "error",
+        "noAssignInExpressions": "warn"
+      },
+      "correctness": {
+        "noUnusedVariables": "error",
+        "useHookAtTopLevel": "error",
+        "noVoidElementsWithChildren": "error",
+        "useExhaustiveDependencies": "error",
+        "noInnerDeclarations": "warn"
+      },
+      "a11y": {
+        "noNoninteractiveElementToInteractiveRole": "warn",
+        "useKeyWithClickEvents": "warn",
+        "noLabelWithoutControl": "warn",
+        "useButtonType": "warn",
+        "useSemanticElements": "warn",
+        "noStaticElementInteractions": "warn",
+        "noSvgWithoutTitle": "warn"
+      },
+      "complexity": {
+        "noForEach": "warn",
+        "noExcessiveCognitiveComplexity": "off",
+        "noVoid": "warn"
+      },
+      "style": {
+        "noNonNullAssertion": "warn",
+        "useConst": "warn"
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true,
+    "formatWithErrors": false,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 100
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "jsxQuoteStyle": "double",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always"
+    }
+  },
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "src/**/*.ts",
+      "src/**/*.tsx",
+      "!src/components/ui/*",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/src-tauri",
+      "!**/docs",
+      "!**/*.test.ts",
+      "!**/*.test.tsx",
+      "!**/test",
+      "!**/*.config.js",
+      "!**/*.config.ts",
+      "!~"
+    ]
+  }
+}

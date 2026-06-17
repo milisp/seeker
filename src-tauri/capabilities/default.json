@@ -1,0 +1,83 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-start-dragging",
+    "core:window:allow-set-position",
+    "opener:default",
+    "dialog:default",
+    "log:default",
+    "fs:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "$HOME/**"
+        },
+        {
+          "path": "$HOME/**/.*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-remove",
+      "allow": [
+        {
+          "path": "$HOME/.codewhale/**"
+        },
+        {
+          "path": "$HOME/.codewhale/**/.*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [
+        {
+          "path": "$HOME/.seeker/**"
+        },
+        {
+          "path": "$HOME/.seeker/**/.*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [
+        {
+          "path": "$HOME/.seeker/**"
+        },
+        {
+          "path": "$HOME/.seeker/**/.*"
+        }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        {
+          "path": "$HOME/.seeker/**"
+        },
+        {
+          "path": "$HOME/.seeker/**/.*"
+        }
+      ]
+    },
+    "shell:default",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "codewhale-tui",
+          "sidecar": true
+        }
+      ]
+    },
+    "os:default"
+  ]
+}
