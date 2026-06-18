@@ -18,6 +18,7 @@ export function useWhaleEvents() {
       setActiveTurnId,
       setActiveApprovalId,
       setUsageByThread,
+      addFileChange,
     } = useWhaleStore.getState();
 
     const unlistens: Promise<() => void>[] = [];
@@ -99,6 +100,23 @@ export function useWhaleEvents() {
                 // Always store the inputEvent so item.completed can look it up
                 // regardless of kind — avoids missing data when kind is undefined.
                 setToolCallEventsByItemId(itemId, { method, params });
+                const tool = params?.payload?.tool;
+                if (tool && turnId && threadId) {
+                  const toolName = tool.name as string;
+                  if (toolName === 'write_file' || toolName === 'edit_file') {
+                    const toolInput = tool.input as Record<string, any> | undefined;
+                    if (toolInput) {
+                      addFileChange(threadId, turnId, {
+                        itemId,
+                        toolName,
+                        path: (toolInput.path as string) || '',
+                        search: toolInput.search as string,
+                        replace: toolInput.replace as string,
+                        content: toolInput.content as string,
+                      });
+                    }
+                  }
+                }
                 break;
               }
               finishStreamingItem(threadId, itemId);

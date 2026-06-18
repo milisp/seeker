@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { invoke } from '@tauri-apps/api/core';
-import { WhaleProviderId, ThreadListResponse, WhaleEvent, WhaleMode, TurnStatus, Usage } from '@/components/whale/types';
+import { WhaleProviderId, ThreadListResponse, WhaleEvent, WhaleMode, TurnStatus, Usage, WhaleFileChange } from '@/components/whale/types';
 
 export type ReasoningEffort = 'auto' | 'off' | 'high' | 'max';
 export type Prompt = string | null
@@ -71,6 +71,9 @@ interface WhaleStore {
   // Usage info per thread
   usageByThread: Record<string, Usage>;
   setUsageByThread: (threadId: string, usage: Usage) => void;
+
+  fileChangesByTurn: Record<string, Record<string, WhaleFileChange[]>>;
+  addFileChange: (threadId: string, turnId: string, change: WhaleFileChange) => void;
 }
 
 export const useWhaleStore = create<WhaleStore>()(
@@ -223,6 +226,20 @@ export const useWhaleStore = create<WhaleStore>()(
           [threadId]: usage,
         },
       })),
+
+      fileChangesByTurn: {},
+      addFileChange: (threadId, turnId, change) => set((state) => {
+        const existing = state.fileChangesByTurn[threadId]?.[turnId] ?? [];
+        return {
+          fileChangesByTurn: {
+            ...state.fileChangesByTurn,
+            [threadId]: {
+              ...(state.fileChangesByTurn[threadId] ?? {}),
+              [turnId]: [...existing, change],
+            },
+          },
+        };
+      }),
     }),
     {
       name: 'whale-store',

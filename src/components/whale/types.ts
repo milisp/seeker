@@ -148,3 +148,12 @@ export interface ThreadListResponse {
   latest_turn_id: string;
   latest_turn_status: string;
 }
+
+export interface WhaleFileChange {
+  itemId: string;
+  toolName: string;
+  path: string;
+  search?: string;
+  replace?: string;
+  content?: string;
+}
