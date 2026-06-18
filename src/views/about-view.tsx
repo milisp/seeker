@@ -1,7 +1,7 @@
 import { version } from '../../package.json';
 const GITHUB_URL = 'https://github.com/milisp/seeker';
 import { openUrl } from '@tauri-apps/plugin-opener';
-import AppIcon from '@/assets/whale.svg';
+import AppIcon from '@/assets/seeker.svg';
 
 export default function AboutView() {
   return (

@@ -19,15 +19,21 @@ export function FileView() {
 
   useEffect(() => {
     if (selectedFilePath) {
+      const ext = selectedFilePath.split(/[\\/]/).pop()?.split('.').pop()?.toLowerCase() || '';
+      if (['docx', 'pptx', 'xlsx', 'xls', 'doc', 'pdf'].includes(ext)) {
+        return;
+      }
       readTextFile(selectedFilePath).then(setContent).catch(console.error);
     } else {
       setContent('');
     }
   }, [selectedFilePath]);
 
-  // Re-read file content when the file changes on disk
   useEffect(() => {
     if (!selectedFilePath) return;
+    const ext = selectedFilePath.split(/[\\/]/).pop()?.split('.').pop()?.toLowerCase() || '';
+    if (['docx', 'pptx', 'xlsx', 'xls', 'doc', 'pdf'].includes(ext)) return;
+
     let unlisten: (() => void) | undefined;
     onFsChange((change) => {
       if (change.path === selectedFilePath) {
@@ -42,6 +48,7 @@ export function FileView() {
   const isMarkdown = selectedFilePath?.toLowerCase().endsWith('.md') ?? false;
   const currentFolder = cwd.split(/[/\\]/).pop();
   const selectedFile = selectedFilePath?.split(/[/\\]/).pop();
+  const extension = selectedFilePath?.split(/[\\/]/).pop()?.split('.').pop()?.toLowerCase() || '';
 
   return (
     <div className="flex h-full w-full overflow-hidden" data-color-mode={resolvedTheme}>
@@ -61,7 +68,6 @@ export function FileView() {
           <Button
             onClick={() => {
               setIsFileTreeOpen((prev) => {
-                // If opening, focus after state update
                 if (!prev) setTimeout(() => fileTreeRef.current?.focusSearch(), 0);
                 return !prev;
               });
@@ -82,7 +88,7 @@ export function FileView() {
                   source={content}
                   style={{ padding: '20px', backgroundColor: 'transparent' }}
                 />
-              ) : ["docx", "pptx", "xlsx", "xls", "doc"].includes(selectedFilePath?.split(/[\\/]/).pop()?.split(".").pop()?.toLowerCase() || "") ? (
+              ) : ['docx', 'pptx', 'xlsx', 'xls', 'doc', 'pdf'].includes(extension) ? (
                 <OfficeView />
               ) : (
                 <pre className="p-4 whitespace-pre-wrap font-mono text-sm text-foreground">
