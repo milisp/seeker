@@ -1,5 +1,9 @@
 mod commands;
+mod shared;
+mod state;
 mod whale;
+
+use state::WatchState;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -16,6 +20,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .manage(whale::WhaleState::empty())
+        .manage(WatchState::new())
         .invoke_handler(tauri::generate_handler![
             whale::connect,
             whale::create_thread,
@@ -32,10 +37,15 @@ pub fn run() {
             commands::workspace::list_workspaces,
             commands::workspace::add_workspace,
             commands::workspace::remove_workspace,
+            commands::fs::list_dir,
+            commands::fs::search_dir,
+            commands::watch::start_watch,
+            commands::watch::stop_watch,
 
             commands::model::list_models,
             commands::secret::read_secrets,
             commands::secret::write_secrets,
+
         ])
         .setup(|_app| Ok(()))
         .run(tauri::generate_context!())

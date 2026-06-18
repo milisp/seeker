@@ -97,7 +97,6 @@ pub async fn watch(
     let gitignore = Arc::new(build_gitignore(&gitignore_root));
 
     let abs_clone = abs.clone();
-    let is_dir = abs_clone.is_dir();
 
     // Use debouncer with 50ms delay and FileIdMap cache (explicit for cross-platform consistency)
     let mut debouncer = new_debouncer_opt(
@@ -114,7 +113,7 @@ pub async fn watch(
                         let payload = FsChange {
                             path: p.to_string_lossy().to_string(),
                             kind: kind_to_string(&event.event.kind),
-                            is_dir,
+                            is_dir: path_is_dir,
                         };
                         emit_for_cb(payload);
                     }
