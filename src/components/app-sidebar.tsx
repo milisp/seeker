@@ -147,7 +147,11 @@ export function AppSidebar() {
                     <SidebarMenuAction
                       showOnHover
                       className="right-1"
-                      onClick={() => setCwd(ws)}
+                      onClick={() => {
+                        setCwd(ws);
+                        setCurrentView('main');
+                        triggerFocus();
+                      }}
                     >
                       <SquarePen className="h-3.5 w-3.5" />
                     </SidebarMenuAction>
