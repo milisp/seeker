@@ -44,5 +44,17 @@ export function buildSearchTree(results: SearchResult[], rootPath: string): File
     });
   }
 
-  return roots;
+  // Deduplicate file nodes within each directory (same path can appear from
+  // multiple search results if the backend returns duplicates)
+  const dedup = (nodes: FileNode[]) => {
+    const seen = new Set<string>();
+    const out: FileNode[] = [];
+    for (const n of nodes) {
+      if (!seen.has(n.path)) { seen.add(n.path); out.push(n); }
+      if (n.children) n.children = dedup(n.children);
+    }
+    return out;
+  };
+
+  return dedup(roots);
 }

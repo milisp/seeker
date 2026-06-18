@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { readTextFile } from '@tauri-apps/plugin-fs';
 import { onFsChange } from '@/services/tauri/watch';
 import MDEditor from '@uiw/react-md-editor';
 import { useThemeContext } from '@/components/ThemeContext';
 import { Folders } from 'lucide-react';
 import { useFileViewStore, useWorkspaceStore } from '@/stores';
-import { FileTree } from './file-tree';
+import { FileTree, type FileTreeHandle } from './file-tree';
 import { Button } from '@/components/ui/button';
 import { OfficeView } from './OfficeView';
 
@@ -14,7 +14,8 @@ export function FileView() {
   const { resolvedTheme } = useThemeContext();
   const [content, setContent] = useState<string>('');
   const { cwd } = useWorkspaceStore();
-  const [isFileTreeOpen, setIsFileTreeOpen] = useState(false);
+  const [isFileTreeOpen, setIsFileTreeOpen] = useState(true);
+  const fileTreeRef = useRef<FileTreeHandle>(null);
 
   useEffect(() => {
     if (selectedFilePath) {
@@ -58,7 +59,13 @@ export function FileView() {
             )}
           </div>
           <Button
-            onClick={() => setIsFileTreeOpen((prev) => !prev)}
+            onClick={() => {
+              setIsFileTreeOpen((prev) => {
+                // If opening, focus after state update
+                if (!prev) setTimeout(() => fileTreeRef.current?.focusSearch(), 0);
+                return !prev;
+              });
+            }}
             variant={isFileTreeOpen ? 'secondary' : 'ghost'}
             size="icon"
             className="h-7 w-7"
@@ -91,7 +98,7 @@ export function FileView() {
 
           {isFileTreeOpen && (
             <div className="w-60 h-full border-l">
-              <FileTree folder={cwd} />
+              <FileTree ref={fileTreeRef} folder={cwd} />
             </div>
           )}
         </div>

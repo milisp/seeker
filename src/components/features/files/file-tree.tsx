@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FileIcon, defaultStyles } from 'react-file-icon';
 import { invoke } from '@tauri-apps/api/core';
 import { resolve } from '@tauri-apps/api/path';
@@ -10,7 +10,11 @@ import type { FileNode, SearchResult, FileTreeProps } from './types';
 import { buildSearchTree, getExtension } from './utils';
 import { useFileTree } from './use-file-tree';
 
-export function FileTree({ folder, onFileSelect }: FileTreeProps) {
+export interface FileTreeHandle {
+  focusSearch: () => void;
+}
+
+export const FileTree = forwardRef<FileTreeHandle, FileTreeProps>(function FileTree({ folder, onFileSelect }, ref) {
   const { root, loading, error, loadChildren } = useFileTree(folder);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [loadingNodes, setLoadingNodes] = useState<Set<string>>(new Set());
@@ -19,6 +23,11 @@ export function FileTree({ folder, onFileSelect }: FileTreeProps) {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
   const searchAbortRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focusSearch: () => searchInputRef.current?.focus(),
+  }));
 
   const { setSelectedFilePath } = useFileViewStore();
   const { setPrompt, prompt } = useWhaleStore();
@@ -29,6 +38,13 @@ export function FileTree({ folder, onFileSelect }: FileTreeProps) {
   useEffect(() => {
     if (root?.path) setExpanded(new Set([root.path]));
   }, [root?.path]);
+
+  // Re-focus search input after root finishes loading (async load steals focus)
+  useEffect(() => {
+    if (!root || loading) return;
+    const el = searchInputRef.current;
+    if (el && document.activeElement !== el) el.focus();
+  }, [root, loading]);
 
   // ---------------------------------------------------------------------------
   // Search
@@ -53,7 +69,26 @@ export function FileTree({ folder, onFileSelect }: FileTreeProps) {
     return () => { if (searchAbortRef.current) clearTimeout(searchAbortRef.current); };
   }, [searchQuery, folder]);
 
-  const searchTree = (root && searchResults.length > 0) ? buildSearchTree(searchResults, root.path) : [];
+  const searchTree = useMemo(
+    () => (root && searchResults.length > 0) ? buildSearchTree(searchResults, root.path) : [],
+    [searchResults, root?.path],
+  );
+
+  // Auto-expand all dir nodes produced by buildSearchTree
+  useEffect(() => {
+    if (!isSearchMode || searchTree.length === 0) return;
+    const dirPaths = new Set<string>();
+    const collectDirs = (nodes: FileNode[]) => {
+      for (const node of nodes) {
+        if (node.kind === 'dir') {
+          dirPaths.add(node.path);
+          if (node.children) collectDirs(node.children);
+        }
+      }
+    };
+    collectDirs(searchTree);
+    if (dirPaths.size > 0) setExpanded((prev) => new Set([...prev, ...dirPaths]));
+  }, [searchTree, isSearchMode]);
 
   // ---------------------------------------------------------------------------
   // Tree interaction
@@ -147,6 +182,7 @@ export function FileTree({ folder, onFileSelect }: FileTreeProps) {
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
           <Input
+            ref={searchInputRef}
             type="text"
             placeholder="filter files…"
             value={searchQuery}
@@ -190,4 +226,4 @@ export function FileTree({ folder, onFileSelect }: FileTreeProps) {
       </div>
     </div>
   );
-}
+});
