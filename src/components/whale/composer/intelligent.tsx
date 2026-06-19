@@ -11,6 +11,7 @@ import { WhaleProviderId } from '../types';
 import { useTranslation } from 'react-i18next';
 import { loadSecrets } from '@/services/tauri';
 import { ApiKeyDialog } from './ApiKeyDialog';
+import { ProviderIcons } from '@/components/ProviderIcons';
 
 const REASONING_EFFORTS: { value: ReasoningEffort; label: string }[] = [
   { value: 'auto', label: 'Auto' },
@@ -147,7 +148,7 @@ export function ModelSelect() {
                 <div key={p.id} className="flex flex-col gap-0.5">
                   <div className="flex items-center justify-between sticky top-0 bg-background z-10 py-0.5">
                     <Label className="text-[11px] font-semibold text-muted-foreground/60">
-                      {p.label}
+                      <ProviderIcons providerId={p.id} size='sm' />{p.label}
                     </Label>
                     {!hasKey && p.id !== 'ollama' && (
                       <span className="text-[10px] text-amber-500 font-normal flex items-center gap-0.5">
