@@ -1,4 +1,4 @@
-import DiffViewer from "@/components/diff-viewer";
+import DiffViewer from "@/components/DiffViewer";
 import { useWhaleStore } from "@/stores";
 
 export function ReviewView() {

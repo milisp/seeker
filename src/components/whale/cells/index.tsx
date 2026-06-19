@@ -1,3 +1,3 @@
 export { ApprovalCard } from "./ApprovalCard"
-export { EventItem } from "./event-item"
+export { EventItem } from "./EventItem"
 export { StatusIndicator } from "./StatusIndicator"

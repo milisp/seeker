@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
 import { listen } from '@tauri-apps/api/event';
 import { whaleConnect, listThreads } from '@/services/tauri';
 

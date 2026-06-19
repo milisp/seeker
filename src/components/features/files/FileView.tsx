@@ -5,7 +5,7 @@ import MDEditor from '@uiw/react-md-editor';
 import { useThemeContext } from '@/components/ThemeContext';
 import { Folders } from 'lucide-react';
 import { useFileViewStore, useWorkspaceStore } from '@/stores';
-import { FileTree, type FileTreeHandle } from './file-tree';
+import { FileTree, type FileTreeHandle } from './FileTree';
 import { Button } from '@/components/ui/button';
 import { OfficeView } from './OfficeView';
 

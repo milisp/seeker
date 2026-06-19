@@ -1,4 +1,4 @@
-import { useWhaleStore } from '@/components/whale/use-whale-store';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
 import { Activity } from 'lucide-react';
 import {
   Popover,

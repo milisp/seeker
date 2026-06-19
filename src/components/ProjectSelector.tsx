@@ -2,7 +2,7 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { useWorkspaceStore } from '@/stores/useWorkspaceStore';
 import { Button } from '@/components/ui/button';
 import { Folder, FolderPlus } from 'lucide-react';
-import { getFileName } from '@/lib/get-filename';
+import { getFileName } from '@/lib/GetFileName';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { useTranslation } from 'react-i18next';

@@ -1,2 +1,2 @@
-export { useWhaleConnect } from './use-whale-connect';
+export { useWhaleConnect } from './useWhaleConnect';
 export { useWhaleEvents } from './useWhaleEvents';

@@ -3,9 +3,9 @@ import { CreateThread, sendPrompt, turnInterrupt } from '@/services/tauri';
 import { Send, Plus, SquareStop } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { ModelSelect } from '@/components/whale/composer/intelligent';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
-import { ModeSelector } from './mode-selector';
+import { ModelSelect } from '@/components/whale/composer/Intelligent';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
+import { ModeSelector } from './ModeSelector';
 import { useWorkspaceStore } from '@/stores';
 import { useTranslation } from 'react-i18next';
 

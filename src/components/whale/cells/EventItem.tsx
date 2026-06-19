@@ -1,11 +1,11 @@
 import { getDate } from '../utils/get-date';
 import { WhaleEvent, TurnInfo } from '../types';
 import { Streamdown } from 'streamdown';
-import { ItemFailed } from './item-fail';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
-import { CopyIcon } from '@/components/copy-icon';
+import { ItemFailed } from './ItemFail';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
+import { CopyIcon } from '@/components/CopyIcon';
 import { Badge } from '@/components/ui/badge';
-import { ToolCallItem } from './tool-call';
+import { ToolCallItem } from './ToolCall';
 
 type Props = {
   activeEvents: WhaleEvent[];

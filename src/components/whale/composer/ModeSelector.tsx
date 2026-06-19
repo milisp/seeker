@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
 import { type WhaleMode } from '@/components/whale/types';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '@/hooks/use-mobile';

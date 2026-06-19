@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { listen } from '@tauri-apps/api/event';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
 import { AgentLogEvent, ApprovalPayload, ItemInfo, TurnInfo, Usage } from '@/components/whale/types';
 
 export function useWhaleEvents() {

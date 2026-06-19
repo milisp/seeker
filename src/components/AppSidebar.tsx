@@ -17,7 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ThreadList } from './whale/thread-list';
+import { ThreadList } from './whale/ThreadList';
 import { useWhaleStore, useWorkspaceStore } from '@/stores';
 import {
   Sidebar,
@@ -34,8 +34,8 @@ import {
   SidebarMenuAction,
 } from '@/components/ui/sidebar';
 import { useTranslation } from 'react-i18next';
-import { ProjectSelector } from './project-selector';
-import { getFileName } from '@/lib/get-filename';
+import { ProjectSelector } from './ProjectSelector';
+import { getFileName } from '@/lib/GetFileName';
 import { useWhaleConnect } from '@/components/whale/hooks';
 import { useLayoutStore } from '@/stores/useLayoutStore';
 

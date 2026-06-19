@@ -4,14 +4,13 @@ import { Button } from '@/components/ui/button';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { usePanelRef } from 'react-resizable-panels';
-import { RightPanel } from '@/components/right-panel';
-import { AppSidebar } from '@/components/app-sidebar';
-import { WhaleView } from '@/components/whale/whale-view';
+import { RightPanel } from '@/components/RightPanel';
+import { AppSidebar } from '@/components/AppSidebar';
+import { WhaleView } from '@/components/whale/WhaleView';
 import { useWhaleStore, useLayoutStore } from '@/stores';
-import SkillsView from '@/views/skills-view';
-import SettingsView from '@/views/settings-view';
+import SkillsView from '@/views/SkillsView';
+import SettingsView from '@/views/SettingsView';
 import { listen } from '@tauri-apps/api/event';
-
 export default function Layout() {
   const { currentView, setCurrentView, isRightPanelOpen, setIsRightPanelOpen } = useLayoutStore();
   const [isRightPanelMaximized, setIsRightPanelMaximized] = useState(false);

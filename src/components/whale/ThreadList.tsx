@@ -2,7 +2,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { resumeThread } from '@/services/tauri';
 import { WhaleMode, type ThreadListResponse } from '@/components/whale/types';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { Menu, MenuItem } from "@tauri-apps/api/menu";

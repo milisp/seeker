@@ -2,14 +2,14 @@ import { useRef, useEffect, useState } from 'react';
 import { AlertTriangle, ArrowDown } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useWhaleEvents } from '@/components/whale/hooks';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
-import { Composer } from '@/components/whale/composer/composer';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
+import { Composer } from '@/components/whale/composer/Composer';
 import { useSidebar } from '@/components/ui/sidebar';
 import { useLayoutStore } from '@/stores';
 import { ApprovalCard, StatusIndicator, EventItem } from '@/components/whale/cells';
-import { WorkspacePopover } from '@/components/project-selector';
+import { WorkspacePopover } from '@/components/ProjectSelector';
 import { Streamdown } from 'streamdown';
-import { ContextWindow } from './composer/context-window';
+import { ContextWindow } from './composer/ContextWindow';
 import { Button } from '@/components/ui/button';
 import LogoSvg from '@/assets/seeker.svg';
 

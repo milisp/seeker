@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { FileNode, SearchResult, FileTreeProps } from './types';
 import { buildSearchTree, getExtension } from './utils';
-import { useFileTree } from './use-file-tree';
+import { useFileTree } from './useFileTree';
 
 export interface FileTreeHandle {
   focusSearch: () => void;

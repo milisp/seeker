@@ -1,7 +1,7 @@
 import { ShieldAlert, X, Check, FastForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
-import { ToolCallCard, FileChangeEvent } from './tool-call';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
+import { ToolCallCard, FileChangeEvent } from './ToolCall';
 import { ApprovalPayload } from '../types';
 
 interface ApprovalCardProps {

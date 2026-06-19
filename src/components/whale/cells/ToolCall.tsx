@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import DiffViewer from '@/components/diff-viewer';
+import DiffViewer from '@/components/DiffViewer';
 import {
   ChevronRight,
   ChevronDown,
@@ -14,7 +14,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import type { WhaleEvent } from '../types';
-import { useWhaleStore } from '../use-whale-store';
+import { useWhaleStore } from '../useWhaleStore';
 
 // ---------------------------------------------------------------------------
 // Tool helpers

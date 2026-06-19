@@ -1,5 +1,5 @@
 import { Sparkles } from 'lucide-react';
-import { useWhaleStore } from '@/components/whale/use-whale-store';
+import { useWhaleStore } from '@/components/whale/useWhaleStore';
 
 export function StatusIndicator() {
   const { currentTurnStatus: status } = useWhaleStore();

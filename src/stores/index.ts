@@ -1,4 +1,4 @@
-export { useWhaleStore } from "@/components/whale/use-whale-store";
+export { useWhaleStore } from "@/components/whale/useWhaleStore";
 export { useWorkspaceStore } from "./useWorkspaceStore";
 export { useLayoutStore } from "./useLayoutStore";
 export { useFileViewStore } from "./useFileViewStore";

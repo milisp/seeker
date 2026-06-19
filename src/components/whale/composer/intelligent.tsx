@@ -6,11 +6,11 @@ import { ChevronDown, Settings, AlertCircle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { useWhaleStore, ReasoningEffort } from '@/components/whale/use-whale-store';
+import { useWhaleStore, ReasoningEffort } from '@/components/whale/useWhaleStore';
 import { WhaleProviderId } from '../types';
 import { useTranslation } from 'react-i18next';
 import { loadSecrets } from '@/services/tauri';
-import { ApiKeyDialog } from './api-key-dialog';
+import { ApiKeyDialog } from './ApiKeyDialog';
 
 const REASONING_EFFORTS: { value: ReasoningEffort; label: string }[] = [
   { value: 'auto', label: 'Auto' },

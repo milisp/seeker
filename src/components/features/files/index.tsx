@@ -1,3 +1,3 @@
 export { FileView } from "./FileView";
 export { OfficeView } from "./OfficeView";
-export { FileTree } from "./file-tree";
+export { FileTree } from "./FileTree";
