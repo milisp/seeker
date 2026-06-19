@@ -75,12 +75,12 @@ pub async fn list_models(_state: State<'_, WhaleState>) -> Result<Vec<ProviderGr
                     label: "deepseek-v4-flash".into(),
                 },
                 ProviderModel {
-                    id: "minimaxai/minimax-m2.7".into(),
-                    label: "minimax-m2.7".into(),
-                },
-                ProviderModel {
                     id: "minimaxai/minimax-m3".into(),
                     label: "minimax-m3".into(),
+                },
+                ProviderModel {
+                    id: "minimaxai/minimax-m2.7".into(),
+                    label: "minimax-m2.7".into(),
                 },
             ],
         },
@@ -109,6 +109,10 @@ pub async fn list_models(_state: State<'_, WhaleState>) -> Result<Vec<ProviderGr
                 ProviderModel {
                     id: "deepseek/deepseek-v4-flash".into(),
                     label: "deepseek-v4-flash".into(),
+                },
+                ProviderModel {
+                    id: "minimaxai/minimax-m3".into(),
+                    label: "minimax-m3".into(),
                 },
                 ProviderModel {
                     id: "minimaxai/minimax-m2.7".into(),
