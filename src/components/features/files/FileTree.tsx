@@ -30,7 +30,7 @@ export const FileTree = forwardRef<FileTreeHandle, FileTreeProps>(function FileT
   }));
 
   const { setSelectedFilePath } = useFileViewStore();
-  const { setPrompt, prompt } = useWhaleStore();
+  const { setPrompt, prompt, triggerFocus } = useWhaleStore();
 
   const isSearchMode = searchQuery.trim().length > 0;
 
@@ -158,7 +158,7 @@ export const FileTree = forwardRef<FileTreeHandle, FileTreeProps>(function FileT
             {isDir && isLoadingChildren && <span className="text-xs text-muted-foreground">Loading…</span>}
             {!isRoot && (
               <Button
-                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrompt(prompt + relativePath); }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPrompt(prompt ? `${prompt} ${relativePath}` : relativePath); triggerFocus(); }}
                 variant="ghost" size="icon"
                 className="h-6 w-6 shrink-0 text-muted-foreground opacity-0 group-hover/file-row:opacity-100 transition-opacity"
                 aria-label={`Insert ${node.name}`}

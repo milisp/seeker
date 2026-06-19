@@ -20,11 +20,20 @@ export function Composer({ variant = 'double', autoFocus = true }: ComposerProps
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { unavailable, currentThreadId, setCurrentThreadId, currentTurnStatus, model, mode, focusTrigger, currentReasoningEffort, threads, setThreads } =
+  const { unavailable, currentThreadId, setCurrentThreadId, currentTurnStatus, model, mode, focusTrigger, currentReasoningEffort, threads, setThreads, prompt, setPrompt, triggerFocus } =
     useWhaleStore();
   const canSubmit = input.trim() && !unavailable;
 
   const isMultiLine = variant === 'double';
+
+  // Sync store prompt → local input (e.g. from FileTree Plus button)
+  useEffect(() => {
+    if (prompt) {
+      setInput((prev) => prev ? `${prev} ${prompt}` : prompt);
+      setPrompt(null);
+      triggerFocus();
+    }
+  }, [prompt, setPrompt, triggerFocus]);
 
   useEffect(() => {
     if (autoFocus && !unavailable) {
