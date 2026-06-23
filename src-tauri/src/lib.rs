@@ -47,6 +47,24 @@ pub fn run() {
             commands::secret::write_secrets,
 
         ])
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::Destroyed = event {
+                use tauri::Manager;
+                let state = window.state::<whale::WhaleState>();
+                // state() returns a State<'_> guard — extract the Arc client
+                // synchronously before spawning so there's no lifetime issue.
+                let client = {
+                    // try_read avoids blocking; if the lock is contended we
+                    // fall through and the Drop impl will still kill the child.
+                    state.inner.try_read().ok().and_then(|g| g.client.clone())
+                };
+                if let Some(client) = client {
+                    tauri::async_runtime::spawn(async move {
+                        client.shutdown().await;
+                    });
+                }
+            }
+        })
         .setup(|_app| Ok(()))
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -3671,6 +3671,7 @@ dependencies = [
  "fix-path-env",
  "futures",
  "ignore",
+ "libc",
  "log",
  "notify",
  "notify-debouncer-full",

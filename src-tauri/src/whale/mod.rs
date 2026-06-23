@@ -1,4 +1,5 @@
 use futures::StreamExt;
+use libc;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -42,12 +43,22 @@ pub struct WhaleHttpClient {
     http: reqwest::Client,
     base_url: String,
     auth_token: Option<String>,
+    child_pid: u32,
     child: Mutex<Option<CommandChild>>,
     sse_cancel: Mutex<HashMap<String, CancellationToken>>,
+    stderr_cancel: Mutex<Option<CancellationToken>>,
 }
 
 impl Drop for WhaleHttpClient {
     fn drop(&mut self) {
+        // Cancel the stderr task first
+        if let Ok(mut guard) = self.stderr_cancel.try_lock() {
+            if let Some(token) = guard.take() {
+                token.cancel();
+            }
+        }
+
+        // Then kill the child process
         if let Ok(mut guard) = self.child.try_lock() {
             if let Some(child) = guard.take() {
                 let _ = child.kill();
@@ -57,6 +68,31 @@ impl Drop for WhaleHttpClient {
 }
 
 impl WhaleHttpClient {
+    /// Cleanly shuts down the child process and all background tasks.
+    /// Call this on app exit instead of relying solely on Drop.
+    pub async fn shutdown(&self) {
+        eprintln!("[whale] shutdown: cancelling SSE streams");
+        let mut sse = self.sse_cancel.lock().await;
+        for (_, token) in sse.drain() {
+            token.cancel();
+        }
+        drop(sse);
+
+        eprintln!("[whale] shutdown: cancelling stderr task");
+        if let Some(token) = self.stderr_cancel.lock().await.take() {
+            token.cancel();
+        }
+
+        eprintln!("[whale] shutdown: killing child process (pid={})", self.child_pid);
+        // tauri-plugin-shell's kill() only sends SIGTERM; use SIGKILL to be sure.
+        let killed = unsafe { libc::kill(self.child_pid as libc::pid_t, libc::SIGKILL) == 0 };
+        eprintln!("[whale] shutdown: SIGKILL sent={killed}");
+        // Also call the tauri kill() to clean up internal state.
+        if let Some(child) = self.child.lock().await.take() {
+            let _ = child.kill();
+        }
+    }
+
     fn auth_headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
@@ -196,54 +232,54 @@ async fn stream_thread_events(
 
     loop {
         tokio::select! {
-                    _ = cancel.cancelled() => break,
-                    chunk = stream.next() => {
-                        let Some(chunk) = chunk else { break };
-                        buffer.push_str(&String::from_utf8_lossy(&chunk.map_err(|e| e.to_string())?));
+            _ = cancel.cancelled() => break,
+            chunk = stream.next() => {
+                let Some(chunk) = chunk else { break };
+                buffer.push_str(&String::from_utf8_lossy(&chunk.map_err(|e| e.to_string())?));
 
-                        while let Some(pos) = buffer.find('\n') {
-                            let line = buffer[..pos].trim_end_matches('\r').to_string();
-                            buffer.drain(..=pos);
+                while let Some(pos) = buffer.find('\n') {
+                    let line = buffer[..pos].trim_end_matches('\r').to_string();
+                    buffer.drain(..=pos);
 
-                            if line.is_empty() {
-                                if data_lines.is_empty() && event_name.is_empty() { continue; }
-                                let data = data_lines.join("\n");
-                                data_lines.clear();
-                                if data == "keepalive" {
-                                    event_name.clear();
-                                    continue;
+                    if line.is_empty() {
+                        if data_lines.is_empty() && event_name.is_empty() { continue; }
+                        let data = data_lines.join("\n");
+                        data_lines.clear();
+                        if data == "keepalive" {
+                            event_name.clear();
+                            continue;
+                        }
+                        if let Ok(mut value) = serde_json::from_str::<Value>(&data) {
+                            let method = if event_name.is_empty() {
+                                value.get("event").and_then(|v| v.as_str()).unwrap_or("unknown").to_string()
+                            } else {
+                                event_name.clone()
+                            };
+                            event_name.clear();
+
+                            if let Some(payload) = value.get("payload").and_then(|p| p.as_object()).cloned() {
+                                if let Some(params_obj) = value.as_object_mut() {
+                                    for (k, v) in payload {
+                                        params_obj.entry(k).or_insert(v);
+                                    }
                                 }
-                                if let Ok(mut value) = serde_json::from_str::<Value>(&data) {
-                                    let method = if event_name.is_empty() {
-                                        value.get("event").and_then(|v| v.as_str()).unwrap_or("unknown").to_string()
-                                    } else {
-                                        event_name.clone()
-                                    };
-                                    event_name.clear();
+                            }
+                            if value["event"] != "item.delta" {
+                                println!("{}", method);
+                            }
+                            let _ = app.emit("whale:notification", json!({ "method": method, "params": value }));
+                        }
+                        continue;
+                    }
 
-                                    if let Some(payload) = value.get("payload").and_then(|p| p.as_object()).cloned() {
-            if let Some(params_obj) = value.as_object_mut() {
-                for (k, v) in payload {
-                    params_obj.entry(k).or_insert(v);
+                    if let Some(name) = line.strip_prefix("event:") {
+                        event_name = name.trim().to_string();
+                    } else if let Some(data) = line.strip_prefix("data:") {
+                        data_lines.push(data.trim_start().to_string());
+                    }
                 }
             }
         }
-                                    if value["event"] != "item.delta" {
-                                        println!("{}", method);
-                                    }
-                                    let _ = app.emit("whale:notification", json!({ "method": method, "params": value }));
-                                }
-                                continue;
-                            }
-
-                            if let Some(name) = line.strip_prefix("event:") {
-                                event_name = name.trim().to_string();
-                            } else if let Some(data) = line.strip_prefix("data:") {
-                                data_lines.push(data.trim_start().to_string());
-                            }
-                        }
-                    }
-                }
     }
     Ok(())
 }
@@ -263,7 +299,7 @@ pub async fn spawn_whale_client(
     let base_url = format!("http://127.0.0.1:{port}");
     let runtime_token = format!("{}", uuid::Uuid::new_v4().simple());
 
-    let (mut event_rx, child) = app_handle
+    let (event_rx, child) = app_handle
         .shell()
         .sidecar("codewhale-tui")
         .map_err(|e| format!("sidecar not found: {e}"))?
@@ -272,29 +308,43 @@ pub async fn spawn_whale_client(
         .spawn()
         .map_err(|e| format!("failed to spawn `codewhale` serve --http: {e}. Install CodeWhale and ensure it is on PATH."))?;
 
+    let stderr_token = CancellationToken::new();
+    let stderr_token_task = stderr_token.clone();
+
     tauri::async_runtime::spawn(async move {
         use tauri_plugin_shell::process::CommandEvent;
-        while let Some(event) = event_rx.recv().await {
-            match event {
-                CommandEvent::Stderr(line) => {
-                    let text = String::from_utf8_lossy(&line);
-                    let text = text.trim();
-                    if !text.is_empty() {
-                        eprintln!("codewhale serve: {text}");
+        let mut event_rx = event_rx;
+        loop {
+            tokio::select! {
+                _ = stderr_token_task.cancelled() => break,
+                event = event_rx.recv() => {
+                    match event {
+                        Some(CommandEvent::Stderr(line)) => {
+                            let text = String::from_utf8_lossy(&line);
+                            let text = text.trim();
+                            if !text.is_empty() {
+                                eprintln!("codewhale serve: {text}");
+                            }
+                        }
+                        Some(CommandEvent::Error(e)) => eprintln!("codewhale serve error: {e}"),
+                        // Channel closed — child process has exited
+                        None => break,
+                        _ => {}
                     }
                 }
-                CommandEvent::Error(e) => eprintln!("codewhale serve error: {e}"),
-                _ => {}
             }
         }
     });
 
+    let child_pid = child.pid();
     let whale = Arc::new(WhaleHttpClient {
         http: reqwest::Client::new(),
         base_url,
         auth_token: Some(runtime_token),
+        child_pid,
         child: Mutex::new(Some(child)),
         sse_cancel: Mutex::new(HashMap::new()),
+        stderr_cancel: Mutex::new(Some(stderr_token)),
     });
 
     whale.wait_for_health().await?;

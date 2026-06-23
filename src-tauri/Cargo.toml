@@ -29,6 +29,7 @@ log = "0.4"
 
 anyhow = "1.0.102"
 dirs = "6"
+libc = "0.2"
 uuid = { version = "1", features = ["v4", "serde"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
