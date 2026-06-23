@@ -39,10 +39,8 @@ reqwest = { version = "0.12", default-features = false, features = ["json", "str
 notify-debouncer-full = "0.7.0"
 
 [target.'cfg(not(any(target_os = "ios", target_os = "android")))'.dependencies]
-toml = "0.8"
 thiserror = "2.0.18"
 
-gix = { version = "0.84.0", features = ["blocking-network-client", "blocking-http-transport-curl"] }
 fix-path-env = { git = "https://github.com/tauri-apps/fix-path-env-rs" }
 notify = "8.2.0"
 ignore = "0.4.26"
