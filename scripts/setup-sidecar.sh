@@ -26,7 +26,7 @@ Linux)
     TARGET_NAME="codewhale-tui-x86_64-unknown-linux-gnu"
     EXTRACT_CMD="tar -xzf $FILE"
     # Adjusting if Linux zip also has a subfolder, otherwise leave as "codewhale-tui"
-    SRC_BIN="codewhale-tui"
+    SRC_BIN="codewhale-linux-x64/codewhale-tui"
   else
     echo "ERROR: Unsupported Linux architecture: $ARCH"
     exit 1
