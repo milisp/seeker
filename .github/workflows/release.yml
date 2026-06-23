@@ -26,6 +26,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Setup CodeWhale Sidecar
+        run: ./setup-sidecar.sh
+        shell: bash
+
       - name: setup node
         uses: actions/setup-node@v6
 

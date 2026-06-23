@@ -20,6 +20,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Setup CodeWhale Sidecar
+        run: ./setup-sidecar.sh
+        shell: bash
+
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
