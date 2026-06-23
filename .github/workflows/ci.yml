@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - ".github/workflows/ci.yml"
+      - "scripts/setup-sidecar.sh"
       - "src/**"
       - "src-tauri/**"
       - "Cargo.toml"
