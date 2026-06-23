@@ -1,5 +1,4 @@
 use futures::StreamExt;
-use libc;
 use reqwest::header::{AUTHORIZATION, CONTENT_TYPE, HeaderMap, HeaderValue};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -37,6 +36,15 @@ impl WhaleState {
             }),
         }
     }
+
+    // Explicitly clean up the client and its sidecar process on app exit
+    pub async fn shutdown(&self) {
+        let mut guard = self.inner.write().await;
+        if let Some(client) = guard.client.take() {
+            // Call the client's internal shutdown to clear tokens and kill the process safely
+            client.shutdown().await;
+        }
+    }
 }
 
 pub struct WhaleHttpClient {
@@ -58,7 +66,7 @@ impl Drop for WhaleHttpClient {
             }
         }
 
-        // Then kill the child process
+        // Then kill the child process cross-platform using tauri's child.kill()
         if let Ok(mut guard) = self.child.try_lock() {
             if let Some(child) = guard.take() {
                 let _ = child.kill();
@@ -84,12 +92,16 @@ impl WhaleHttpClient {
         }
 
         eprintln!("[whale] shutdown: killing child process (pid={})", self.child_pid);
-        // tauri-plugin-shell's kill() only sends SIGTERM; use SIGKILL to be sure.
-        let killed = unsafe { libc::kill(self.child_pid as libc::pid_t, libc::SIGKILL) == 0 };
-        eprintln!("[whale] shutdown: SIGKILL sent={killed}");
-        // Also call the tauri kill() to clean up internal state.
+        
         if let Some(child) = self.child.lock().await.take() {
-            let _ = child.kill();
+            match child.kill() {
+                Ok(_) => {
+                    eprintln!("[whale] shutdown: sidecar process terminated successfully.");
+                }
+                Err(e) => {
+                    eprintln!("[whale] shutdown: failed to kill sidecar process: {}", e);
+                }
+            }
         }
     }
 

@@ -4,11 +4,14 @@ mod state;
 mod whale;
 
 use state::WatchState;
+use tauri::{Manager, RunEvent}; // Ensure Manager and RunEvent are imported
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = tauri::Builder::default();
-    builder
+
+    // 1. Build the App instance (Note: Changed to `.build` instead of the original `.run`)
+    let app = builder
         .plugin(tauri_plugin_os::init())
         .plugin(
             tauri_plugin_log::Builder::new()
@@ -33,7 +36,6 @@ pub fn run() {
             whale::turn_interrupt,
             whale::list_skills,
             whale::toggle_skill,
-
             commands::workspace::list_workspaces,
             commands::workspace::add_workspace,
             commands::workspace::remove_workspace,
@@ -41,31 +43,30 @@ pub fn run() {
             commands::fs::search_dir,
             commands::watch::start_watch,
             commands::watch::stop_watch,
-
             commands::model::list_models,
             commands::secret::read_secrets,
             commands::secret::write_secrets,
-
         ])
-        .on_window_event(|window, event| {
-            if let tauri::WindowEvent::Destroyed = event {
-                use tauri::Manager;
-                let state = window.state::<whale::WhaleState>();
-                // state() returns a State<'_> guard — extract the Arc client
-                // synchronously before spawning so there's no lifetime issue.
-                let client = {
-                    // try_read avoids blocking; if the lock is contended we
-                    // fall through and the Drop impl will still kill the child.
-                    state.inner.try_read().ok().and_then(|g| g.client.clone())
-                };
-                if let Some(client) = client {
-                    tauri::async_runtime::spawn(async move {
-                        client.shutdown().await;
-                    });
-                }
-            }
-        })
+        // [Removed] The original `.on_window_event` block was removed to prevent the app from 
+        // exiting before asynchronous tasks finish executing due to the main thread not being blocked.
         .setup(|_app| Ok(()))
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while building tauri application");
+
+    // 2. Take over the Tauri global lifecycle event loop
+    app.run(|app_handle, event| match event {
+        // RunEvent::Exit represents the absolute final stage before the entire application process exits
+        RunEvent::Exit => {
+            let state = app_handle.state::<whale::WhaleState>();
+
+            // Use `block_on` to force-block the current main thread, ensuring the asynchronous 
+            // shutdown logic executes completely.
+            tauri::async_runtime::block_on(async {
+                state.shutdown().await;
+            });
+
+            eprintln!("[tauri] App exited, sidecar and tasks cleaned up securely.");
+        }
+        _ => {}
+    });
 }
