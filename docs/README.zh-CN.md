@@ -1,71 +1,72 @@
 <div align="center">
-  <img src="src-tauri/icons/icon.png" alt="seeker Logo" width="120" height="120">
+  <img src="../src-tauri/icons/icon.png" alt="seeker Logo" width="120" height="120">
 
   <h1>seeker</h1>
 
   <p>
-    <strong>Deepseek agent command center for CodeWhale</strong>
+    <strong>Deepseek 智能体控制中心</strong>
   </p>
 
 </div>
 
-English | [中文](docs/README.zh-CN.md)
+[English](../README.md) | 中文
 
 [![Downloads](https://img.shields.io/github/downloads/milisp/seeker/total.svg)](https://github.com/milisp/seeker/releases)
 
+
 <img alt="seeker-8" src="https://github.com/user-attachments/assets/499728bd-f649-4da7-8cd9-8312ce239252" />
 
-## Install via Homebrew
+## 通过 Homebrew 安装
 
 ```sh
 brew tap milisp/seeker
 brew install --cask seeker
 ```
 
-## Download
+## 下载
 
-[Last Release](https://github.com/milisp/seeker/releases) 
+[最新版本](https://github.com/milisp/seeker/releases)
 
-## Support Providers
+## 支持的提供者
 
 - [deepseek](https://platform.deepseek.com)
 - [Atlascloud](https://www.atlascloud.ai?ref=FRZY3G)
 - [Nvidia Nim](https://build.nvidia.com/?modal=signin&utm_medium=organic&utm_campaign=seeker)
 - [Openrouter](https://openrouter.ai)
 - [Ollama](https://ollama.com)
-- any OpenAI compatibility API
+- 任何 OpenAI 兼容 API
 
-## Architecture
+## 架构
 
 [AGENTS.md](AGENTS.md)
 
-## Development
+## 开发
 
-### install codewhale
+### 安装 CodeWhale
 
 - [CodeWhale](https://github.com/Hmbown/CodeWhale)
 
-#### copy codewhale-tui or link
+#### 复制或链接 codewhale-tui
 
 ```sh
-cp /path/of/codewhale-tui to src-tauri/bin/codewhale-tui-aarch64-apple-darwin # depends the platform and archh you dev
+cp /path/of/codewhale-tui to src-tauri/bin/codewhale-tui-aarch64-apple-darwin # 取决于您的平台和架构
 ```
 
-[prerequisites](https://tauri.app/start/prerequisites/)
+[先决条件](https://tauri.app/start/prerequisites/)
 
-### install bun
+### 安装 bun
 
 ```sh
 curl -fsSL https://bun.com/install | bash
 ```
 
-### install package
+### 安装依赖
 
 ```sh
 bun i
 ```
 
-### start dev
+### 启动开发
 
 ```sh
 bun tauri dev
