@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Make the script exit immediately if any command fails
-# If need code comments, I prefer English not Chinese comments. [cite: 2026-05-30]
 set -euo pipefail
 
-# 1. Automatically locate the project root directory
-PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
+# 1. Locate the repo root (parent of the scripts/ directory)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BIN_DIR="$PROJECT_ROOT/src-tauri/bin"
 
 VERSION="v0.8.64"
@@ -25,7 +25,6 @@ Linux)
     FILE="codewhale-linux-x64.tar.gz"
     TARGET_NAME="codewhale-tui-x86_64-unknown-linux-gnu"
     EXTRACT_CMD="tar -xzf $FILE"
-    # Adjusting if Linux zip also has a subfolder, otherwise leave as "codewhale-tui"
     SRC_BIN="codewhale-linux-x64/codewhale-tui"
   else
     echo "ERROR: Unsupported Linux architecture: $ARCH"
@@ -42,7 +41,6 @@ Darwin)
     FILE="codewhale-macos-arm64.tar.gz"
     TARGET_NAME="codewhale-tui-aarch64-apple-darwin"
     EXTRACT_CMD="tar -xzf $FILE"
-    # Fixed: Added the extracted subfolder prefix here
     SRC_BIN="codewhale-macos-arm64/codewhale-tui"
   else
     echo "ERROR: Unsupported macOS architecture: $ARCH"
@@ -66,7 +64,7 @@ MINGW* | MSYS* | CYGWIN*)
   ;;
 esac
 
-# 4. Create a temporary folder for downloading and extracting to avoid clutter
+# 4. Create a temporary folder for downloading and extracting
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
@@ -85,7 +83,7 @@ if [ ! -f "$SRC_BIN" ]; then
   exit 1
 fi
 
-# 5. Move and rename to absolute Tauri sidecar path
+# 5. Move and rename to the Tauri sidecar path
 echo "Setting up sidecar binary to $BIN_DIR/$TARGET_NAME ..."
 mv "$SRC_BIN" "$BIN_DIR/$TARGET_NAME"
 
