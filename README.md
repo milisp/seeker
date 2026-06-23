@@ -39,6 +39,16 @@ brew install --cask seeker
 
 ## Development
 
+### install codewhale
+
+- [CodeWhale](https://github.com/Hmbown/CodeWhale)
+
+#### copy codewhale-tui or link
+
+```sh
+cp /path/of/codewhale-tui to src-tauri/bin/codewhale-tui-aarch64-apple-darwin # depends the platform and archh you dev
+```
+
 [prerequisites](https://tauri.app/start/prerequisites/)
 
 ### install bun
