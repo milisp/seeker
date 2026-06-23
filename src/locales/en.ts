@@ -1,0 +1,46 @@
+export const en = {
+  common: {
+    cancel: "Cancel",
+    save: "Save",
+    confirm: "Confirm",
+    confirmDeleteThread: "Confirm Delete Thread",
+    deleteDescription: "This operation cannot be undone. All historical data of this thread will be permanently deleted.",
+    addProject: "Add Project",
+    workingInAProject: "Working in a Project",
+    signup: "Signup",
+    getApiKey: "Get API Key",
+    apiKeySettings: "API Key Settings",
+    missingKey: "Missing Key"
+  },
+  sidebar: {
+    newChat: 'New Chat',
+    skills: 'Skills',
+    projects: 'Projects',
+    remove: "Remove",
+    settings: 'Settings',
+  },
+  chat: {
+    askAnything: "Ask anything",
+    reasoning: "Reasoning",
+    searchModel: "Search model",
+    mode: "Mode",
+    yolo: "YOLO",
+    plan: "Plan",
+    agent: "Agent",
+    auto: "Auto",
+    off: "Off",
+    high: "High",
+    max: "Max",
+  },
+  settings: {
+    settings: 'Settings',
+    backToApp: 'Back to App',
+    language: 'Language',
+    general: 'General',
+    'app-ui-language': 'Language for the app UI',
+    auto: 'Auto',
+    english: 'English',
+    chinese: 'Chinese',
+    selectLanguage: 'Select Language',
+  }
+};
